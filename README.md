@@ -2,21 +2,25 @@
 
 ## MVC pattern
 
-## Model
+## 1️⃣ Model
 * dir :
 
-## View
+## 2️⃣ View
 * dir : views
 * views engine : pug
 
-## Controller
+## 3️⃣ Controller
 *  dir :
 
-## urls
+## ✅ urls
 * dir : 
 * `app.use("/", func)`
 
-### Express
+## ✅ Static
+* dir : static
+* 정적파일을 보관하는 장소
+
+### 📑 Express
 * app.set
     * server Setting 
 * app.use
