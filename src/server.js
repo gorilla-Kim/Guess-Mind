@@ -1,4 +1,4 @@
-import {join} from "path";
+import { join } from "path";
 import express from "express";
 import socketIO from "socket.io";
 
@@ -13,10 +13,10 @@ app.set("views", join(__dirname, "views"));
 app.use(express.static(join(__dirname, "static")));
 
 /* routing */
-app.get("/", (req, res)=> res.render("home"));
+app.get("/", (req, res) => res.render("home"));
 
 /* Server start action */
 const handleListening = () => {
-    console.log(`✅  Server is running! http://localhost:${ PORT }`);
+  console.log(`✅  Server is running! http://localhost:${PORT}`);
 };
-app.listen(PORT, handleListening);
+app.listen(PORT, handleListening);s
