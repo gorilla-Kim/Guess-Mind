@@ -33,5 +33,8 @@ io.on("connection", socket => {
   socket.on("newMessage", ({ message }) => {
     socket.broadcast.emit("messageNotifi", { message });
   });
+  /* setting user nickname */
+  socket.on("setNickname", ({ nickname }) => {
+    socket.nickname = nickname;
+  });
 });
-
