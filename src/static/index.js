@@ -9,8 +9,8 @@ const sendMessage = message => {
 
 // recevied new message event func
 const handleMessageNotifi = data => {
-  const { message } = data;
-  console.log(`Client : ${message}`);
+  const { message, nickname } = data;
+  console.log(`${nickname} : ${message}`);
 };
 socket.on("messageNotifi", handleMessageNotifi);
 
