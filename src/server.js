@@ -26,5 +26,12 @@ const server = app.listen(PORT, handleListening);
 
 // io가 모든 이벤트를 알아야 하기 때문에 아래와같이 사용합니다.
 const io = socketIO.listen(server);
+
 // create connection event
-io.on("connection", socket => console.log(socket));
+io.on("connection", socket => {
+  /* chatting event handler */
+  socket.on("newMessage", ({ message }) => {
+    socket.broadcast.emit("messageNotifi", { message });
+  });
+});
+
