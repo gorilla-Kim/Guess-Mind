@@ -22,4 +22,7 @@ const handleListening = () => {
 
 const server = app.listen(PORT, handleListening);
 
-const io = socketIO(server);
+// io가 모든 이벤트를 알아야 하기 때문에 아래와같이 사용합니다.
+const io = socketIO.listen(server);
+
+io.on("connection", () => console.log("✅  Sombody connected!"));
