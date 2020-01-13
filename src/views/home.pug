@@ -7,6 +7,10 @@ html(lang="en")
         link(rel="stylesheet", href="/styles/styles.css")
         title Guess-Mind
     body
-        h1 Hello
+        .loginBox
+            form#jsLogin
+                input(type="text", placeholder="What's your Nicname?")
+        .gameContainer#jsGame
+            h1 You are Logged In
         script(src="/socket.io/socket.io.js")
         script(src="/js/main.js")

@@ -10,8 +10,8 @@ app.set("view engine", "pug");
 app.set("views", join(__dirname, "views"));
 
 /* middleware */
-// static 관련
 app.use(logger("dev"));
+// static 관련
 app.use(express.static(join(__dirname, "static")));
 
 /* routing */
@@ -23,6 +23,11 @@ const handleListening = () => {
 };
 
 const server = app.listen(PORT, handleListening);
+
+/* 
+  SocketIO 관련 처리
+  소켓을 만들고 관련 이벤트에 대한 처리를 하는 부분입니다.
+*/
 
 // io가 모든 이벤트를 알아야 하기 때문에 아래와같이 사용합니다.
 const io = socketIO.listen(server);
