@@ -2,6 +2,8 @@ import { join } from "path";
 import express from "express";
 import socketIO from "socket.io";
 import logger from "morgan";
+import socketController from "./socketController";
+import events from "./events";
 
 /* Setting */
 const PORT = 4000;
@@ -15,7 +17,9 @@ app.use(logger("dev"));
 app.use(express.static(join(__dirname, "static")));
 
 /* routing */
-app.get("/", (req, res) => res.render("home"));
+app.get("/", (req, res) =>
+  res.render("home", { events: JSON.stringify(events) })
+);
 
 /* handler func */
 const handleListening = () => {
@@ -33,16 +37,4 @@ const server = app.listen(PORT, handleListening);
 const io = socketIO.listen(server);
 
 // create connection event
-io.on("connection", socket => {
-  /* chatting event handler */
-  socket.on("newMessage", ({ message }) => {
-    socket.broadcast.emit("messageNotifi", {
-      message,
-      nickname: socket.nickname || "Anon"
-    });
-  });
-  /* setting user nickname */
-  socket.on("setNickname", ({ nickname }) => {
-    socket.nickname = nickname;
-  });
-});
+io.on("connection", socket => socketController(socket));
