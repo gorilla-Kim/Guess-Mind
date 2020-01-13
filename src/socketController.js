@@ -5,8 +5,8 @@ import events from "./events";
 const socketController = socket => {
   // nickname 설정
   socket.on(events.setNickname, ({ nickname }) => {
-    console.log(`⭐  Welcome User : (${nickname})`);
     socket.nickname = nickname;
+    socket.broadcast.emit(events.newUser, { nickname });
   });
 };
 
