@@ -1,11 +1,12 @@
-const notifications = document.getElementById("jsNotifications");
+const body = document.querySelector("body");
 
 const fireNotification = (text, color) => {
   const notification = document.createElement("div");
 
   notification.innerHTML = text;
   notification.style.backgroundColor = color;
-  notifications.appendChild(notification);
+  notification.className = "notification";
+  body.appendChild(notification);
 };
 
 // 새로운 유저 유입알림
