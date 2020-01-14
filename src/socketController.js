@@ -13,6 +13,11 @@ const socketController = socket => {
   socket.on(events.disconnect, () => {
     broadcast(events.disconnected, { nickname: socket.nickname });
   });
+  // 메시지를 전송
+  socket.on(events.sendMsg, ({ message }) => {
+    const { nickname } = socket;
+    broadcast(events.newMsg, { message, nickname });
+  });
 };
 
 export default socketController;
