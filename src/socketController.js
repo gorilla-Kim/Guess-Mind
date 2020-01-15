@@ -14,9 +14,20 @@ const socketController = socket => {
     broadcast(events.disconnected, { nickname: socket.nickname });
   });
   // 메시지를 전송
-  socket.on(events.sendMsg, ({ message }) => {
-    const { nickname } = socket;
-    broadcast(events.newMsg, { message, nickname });
+  socket.on(events.sendMsg, ({ message }) =>
+    broadcast(events.newMsg, { message, nickname: socket.nickname })
+  );
+  // 그리기 시작좌표 받기
+  socket.on(events.beginPath, ({ x, y }) =>
+    broadcast(events.beganPath, { x, y })
+  );
+  // 그리고 있는 좌표 받기(시작이후 좌표)
+  socket.on(events.strokePath, ({ x, y, color }) => {
+    broadcast(events.strokedPath, { x, y, color });
+    console.log(x, y);
+  });
+  socket.on(events.fill, ({ color }) => {
+    broadcast(events.filled, { color });
   });
 };
 
