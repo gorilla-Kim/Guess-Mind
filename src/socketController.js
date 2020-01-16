@@ -1,13 +1,36 @@
 import events from "./events";
+import { chooseWord } from "./words";
 
 /* socket 관련 event handling을 해주는 controller 파일 */
 
 // 유저들의 ID가 저장되는 리스트
 let sockets = [];
+let inProgress = false;
+let word = null;
+let leader = null;
+
+// 게임 진행자를 랜덤으로 선출
+const chooseLeader = () => sockets[Math.floor(Math.random() * sockets.length)];
 
 const socketController = (socket, io) => {
   const broadcast = (event, data) => socket.broadcast.emit(event, data);
   const superBroadcast = (event, data) => io.emit(event, data);
+
+  const startGame = () => {
+    if (!inProgress) {
+      inProgress = true;
+      leader = chooseLeader();
+      word = chooseWord();
+      setTimeout(() => {
+        superBroadcast(events.gameStarted);
+        io.to(leader.id).emit(events.leaderNotif, { word });
+      }, 2000);
+    }
+  };
+  const endGame = () => {
+    inProgress = false;
+    superBroadcast(events.gameEnded);
+  };
 
   // nickname 설정
   socket.on(events.setNickname, ({ nickname }) => {
@@ -15,10 +38,18 @@ const socketController = (socket, io) => {
     sockets.push({ id: socket.id, points: 0, nickname });
     broadcast(events.newUser, { nickname });
     superBroadcast(events.playerUpdate, { sockets });
+    if (sockets.length === 2) {
+      startGame();
+    }
   });
   // 퇴장시... disconnect & disconnected
   socket.on(events.disconnect, () => {
     sockets = sockets.filter(aSocket => aSocket.id !== socket.id);
+    if (sockets.length === 1) {
+      endGame();
+    } else if (leader && socket.id === leader.id) {
+      endGame();
+    }
     broadcast(events.disconnected, { nickname: socket.nickname });
     superBroadcast(events.playerUpdate, { sockets });
   });
