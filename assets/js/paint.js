@@ -84,7 +84,7 @@ const fill = (color = null) => {
   }
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   ctx.fillStyle = currentColor;
-}
+};
 
 function handleCanvasClick() {
   if (filling) {
@@ -117,4 +117,3 @@ if (mode) {
 export const handleBeganPath = ({ x, y }) => beginPath(x, y);
 export const handleStrokedPath = ({ x, y, color }) => strokePath(x, y, color);
 export const handleFilled = ({ color }) => fill(color);
-
