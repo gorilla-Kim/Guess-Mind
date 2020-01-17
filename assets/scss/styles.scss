@@ -28,6 +28,7 @@
     align-items: center;
     min-height: 100%;
     .loginBox,
+    .jsRooms,
     .gameContainer {
       display: none;
     }
@@ -37,6 +38,14 @@
       }
     }
     &.loggedIn {
+      .jsRooms {
+        display: flex;
+      }
+    }
+    &.enterRoom {
+      .jsRooms {
+        display: none;
+      }
       .gameContainer {
         display: flex;
       }

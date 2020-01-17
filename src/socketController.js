@@ -5,6 +5,7 @@ import { chooseWord } from "./words";
 
 // 유저들의 ID가 저장되는 리스트
 let sockets = [];
+let rooms = ["A", "B", "C"];
 let inProgress = false;
 let word = null;
 let leader = null;
@@ -22,6 +23,9 @@ const chooseLeader = () => sockets[Math.floor(Math.random() * sockets.length)];
 const socketController = (socket, io) => {
   const broadcast = (event, data) => socket.broadcast.emit(event, data);
   const superBroadcast = (event, data) => io.emit(event, data);
+  // 특정 방 인원들에게만 emit를 합니다.
+  const roomSocketEmit = (roomName, event, data) =>
+    io.to(roomName).emit(event, data);
 
   const startGame = () => {
     if (sockets.length > 1) {
@@ -69,10 +73,25 @@ const socketController = (socket, io) => {
   socket.on(events.setNickname, ({ nickname }) => {
     socket.nickname = nickname;
     sockets.push({ id: socket.id, points: 0, nickname });
+    superBroadcast(events.getRoomNames, rooms);
     broadcast(events.newUser, { nickname });
     superBroadcast(events.playerUpdate, { sockets });
     startGame();
   });
+  // Room 입장시
+  socket.on(events.joinGameRoom, ({ roomName }) => {
+    console.log(rooms);
+    socket.roomName = roomName;
+    // 해당 유저를 특정이름의 방에 입장시키기.
+    socket.join(roomName);
+    // 새로 생성한 방이라면...
+    if (rooms.filter(room => room === roomName).length === 0) {
+      rooms.push(roomName);
+      console.log(rooms);
+      superBroadcast(events.getRoomNames, rooms);
+    }
+  });
+
   // 퇴장시... disconnect & disconnected
   socket.on(events.disconnect, () => {
     sockets = sockets.filter(aSocket => aSocket.id !== socket.id);
@@ -93,7 +112,10 @@ const socketController = (socket, io) => {
       });
       addPoints(socket.id, 10);
     } else {
-      broadcast(events.newMsg, { message, nickname: socket.nickname });
+      roomSocketEmit(socket.roomName, events.newMsg, {
+        message,
+        nickname: socket.nickname
+      });
     }
   });
   // 그리기 시작좌표 받기

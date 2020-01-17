@@ -15,7 +15,9 @@ const events = {
   gameStarted: "gameStarted",
   leaderNotif: "leaderNotif",
   gameEnded: "gameEnded",
-  gameStarting: "gameStarting"
+  gameStarting: "gameStarting",
+  getRoomNames: "getRoomNames",
+  joinGameRoom: "joinGameRoom"
 };
 
 export default events;

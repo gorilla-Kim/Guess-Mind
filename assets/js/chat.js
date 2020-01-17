@@ -22,8 +22,11 @@ const handleSendMsg = event => {
   appendMsg(value);
 };
 
-export const handleNewMessage = ({ message, nickname }) =>
-  appendMsg(message, nickname);
+export const handleNewMessage = ({ message, nickname }) => {
+  if (localStorage.nickname !== nickname) {
+    appendMsg(message, nickname);
+  }
+};
 
 if (sendMsg) {
   sendMsg.addEventListener("submit", handleSendMsg);
