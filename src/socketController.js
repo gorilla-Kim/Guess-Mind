@@ -34,7 +34,11 @@ const socketController = (socket, io) => {
           superBroadcast(events.gameStarted);
           io.to(leader.id).emit(events.leaderNotif, { word });
           // 30초 뒤에 게임종료
-          timeout = setTimeout(endGame, times.paintTime);
+          timeout = setTimeout(() => {
+            // 제한시간안에 못맞출시 leader point+5
+            addPoints(leader.id, 5);
+            // endGame();
+          }, times.paintTime);
           // 5초 뒤에 게임이 시작됩니다.
         }, times.startTime);
       }
@@ -49,10 +53,10 @@ const socketController = (socket, io) => {
     // game restart
     setTimeout(() => startGame(), times.startTime);
   };
-  const addPoints = id => {
+  const addPoints = (id, point) => {
     sockets = sockets.map(socket => {
       if (socket.id === id) {
-        socket.points += 10;
+        socket.points += point;
       }
       return socket;
     });
@@ -87,7 +91,7 @@ const socketController = (socket, io) => {
         message: `🥇 Winner is ${socket.nickname}, word was: ${word}`,
         nickname: "😀 Bot"
       });
-      addPoints(socket.id);
+      addPoints(socket.id, 10);
     } else {
       broadcast(events.newMsg, { message, nickname: socket.nickname });
     }
