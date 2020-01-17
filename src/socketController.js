@@ -8,6 +8,13 @@ let sockets = [];
 let inProgress = false;
 let word = null;
 let leader = null;
+let timeout = null;
+
+// timeout을 위한 객체변수
+const times = {
+  startTime: 5000,
+  paintTime: 30000
+};
 
 // 게임 진행자를 랜덤으로 선출
 const chooseLeader = () => sockets[Math.floor(Math.random() * sockets.length)];
@@ -26,15 +33,21 @@ const socketController = (socket, io) => {
         setTimeout(() => {
           superBroadcast(events.gameStarted);
           io.to(leader.id).emit(events.leaderNotif, { word });
-        }, 5000);
+          // 30초 뒤에 게임종료
+          timeout = setTimeout(endGame, times.paintTime);
+          // 5초 뒤에 게임이 시작됩니다.
+        }, times.startTime);
       }
     }
   };
   const endGame = () => {
     inProgress = false;
     superBroadcast(events.gameEnded);
+    if (timeout !== null) {
+      clearTimeout(timeout);
+    }
     // game restart
-    setTimeout(() => startGame(), 3000);
+    setTimeout(() => startGame(), times.startTime);
   };
   const addPoints = id => {
     sockets = sockets.map(socket => {
@@ -45,6 +58,7 @@ const socketController = (socket, io) => {
     });
     superBroadcast(events.playerUpdate, { sockets });
     endGame();
+    clearTimeout(timeout);
   };
 
   // nickname 설정
@@ -70,7 +84,7 @@ const socketController = (socket, io) => {
   socket.on(events.sendMsg, ({ message }) => {
     if (message === word) {
       superBroadcast(events.newMsg, {
-        messageBot: `🥇 Winner is ${socket.nickname}, word was: ${word}`,
+        message: `🥇 Winner is ${socket.nickname}, word was: ${word}`,
         nickname: "😀 Bot"
       });
       addPoints(socket.id);
