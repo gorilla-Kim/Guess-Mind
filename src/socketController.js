@@ -17,19 +17,34 @@ const socketController = (socket, io) => {
   const superBroadcast = (event, data) => io.emit(event, data);
 
   const startGame = () => {
-    if (!inProgress) {
-      inProgress = true;
-      leader = chooseLeader();
-      word = chooseWord();
-      setTimeout(() => {
-        superBroadcast(events.gameStarted);
-        io.to(leader.id).emit(events.leaderNotif, { word });
-      }, 2000);
+    if (sockets.length > 1) {
+      if (!inProgress) {
+        inProgress = true;
+        leader = chooseLeader();
+        word = chooseWord();
+        superBroadcast(events.gameStarting);
+        setTimeout(() => {
+          superBroadcast(events.gameStarted);
+          io.to(leader.id).emit(events.leaderNotif, { word });
+        }, 5000);
+      }
     }
   };
   const endGame = () => {
     inProgress = false;
     superBroadcast(events.gameEnded);
+    // game restart
+    setTimeout(() => startGame(), 3000);
+  };
+  const addPoints = id => {
+    sockets = sockets.map(socket => {
+      if (socket.id === id) {
+        socket.points += 10;
+      }
+      return socket;
+    });
+    superBroadcast(events.playerUpdate, { sockets });
+    endGame();
   };
 
   // nickname 설정
@@ -38,9 +53,7 @@ const socketController = (socket, io) => {
     sockets.push({ id: socket.id, points: 0, nickname });
     broadcast(events.newUser, { nickname });
     superBroadcast(events.playerUpdate, { sockets });
-    if (sockets.length === 2) {
-      startGame();
-    }
+    startGame();
   });
   // 퇴장시... disconnect & disconnected
   socket.on(events.disconnect, () => {
@@ -54,9 +67,17 @@ const socketController = (socket, io) => {
     superBroadcast(events.playerUpdate, { sockets });
   });
   // 메시지를 전송
-  socket.on(events.sendMsg, ({ message }) =>
-    broadcast(events.newMsg, { message, nickname: socket.nickname })
-  );
+  socket.on(events.sendMsg, ({ message }) => {
+    if (message === word) {
+      superBroadcast(events.newMsg, {
+        messageBot: `🥇 Winner is ${socket.nickname}, word was: ${word}`,
+        nickname: "😀 Bot"
+      });
+      addPoints(socket.id);
+    } else {
+      broadcast(events.newMsg, { message, nickname: socket.nickname });
+    }
+  });
   // 그리기 시작좌표 받기
   socket.on(events.beginPath, ({ x, y }) =>
     broadcast(events.beganPath, { x, y })
