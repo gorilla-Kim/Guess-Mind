@@ -10,8 +10,11 @@ const fireNotification = (text, color) => {
 };
 
 // 새로운 유저 유입알림
-export const handleNewUser = ({ nickname }) =>
-  fireNotification(`⭐   new user joined (${nickname})`, "rgb(0, 122, 255)");
+export const handleNewUser = ({ nickname }) => {
+  if (localStorage.nickname !== nickname){
+    fireNotification(`⭐   new user joined (${nickname})`, "rgb(0, 122, 255)");
+  }
+};
 
 // 로그아웃된 유저 알림
 export const handleDisconnected = ({ nickname }) =>

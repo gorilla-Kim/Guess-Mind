@@ -8,7 +8,7 @@ import {
   handleGameEnded,
   handleGameStarting
 } from "./players";
-import { appendRoomName } from "./room";
+import { appendRoomNames } from "./room";
 
 let socket = null;
 
@@ -28,5 +28,5 @@ export const initSocket = aSocket => {
   socket.on(events.leaderNotif, handleLeaderNotif);
   socket.on(events.gameEnded, handleGameEnded);
   socket.on(events.gameStarting, handleGameStarting);
-  socket.on(events.getRoomNames, appendRoomName);
+  socket.on(events.getRoomNames, appendRoomNames);
 };

@@ -4,19 +4,18 @@ import { getSocket } from "./sockets";
 const jsRooms = document.getElementById("jsRooms");
 const jsCreateRoom = document.getElementById("jsCreateRoom");
 const body = document.querySelector("body");
-const enterRoom = document.getElementById("enterRoom");
 
 const joinRoom = roomName => {
   getSocket().emit(window.events.joinGameRoom, { roomName });
   body.className = "enterRoom";
 };
 
-export const appendRoomName = rooms => {
+export const appendRoomNames = rooms => {
   jsRooms.innerHTML = "";
   rooms.map(room => {
     const li = document.createElement("li");
     li.innerHTML = `
-      <span>✅ Room: ${room}</span>
+      <span>✅ Room: ${room.roomName}</span>
     `;
     jsRooms.appendChild(li);
   });
